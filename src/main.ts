@@ -15,12 +15,6 @@ async function bootstrap() {
   ))
   //This will remove all null values from request and make it empty string
   app.useGlobalInterceptors(new ExcludeNullInterceptor())
-  //app.useGlobalInterceptors(new ErrorsInterceptor())
-
-  //Set up s3 with app
-  const s3Service = app.get(S3Service);
-  const listBuckets = await s3Service.listBuckets();
-  console.log({listBuckets})
   
   await app.listen(3000);
 }

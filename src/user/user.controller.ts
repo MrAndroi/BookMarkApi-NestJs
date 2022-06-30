@@ -13,8 +13,8 @@ export class UserController {
     constructor(private userService: UserService) { }
 
     @Get('me')
-    getUserData(@User() user: UserDto) {
-        return this.userService.getUserData(user)
+    getUserData(@UserId() id: number) {
+        return this.userService.getUserData(id)
     }
 
     @Patch('update')
@@ -30,7 +30,7 @@ export class UserController {
     @Post('update/avatar')
     @UseInterceptors(FileInterceptor('avatar'))
     updateAvatar(@UploadedFile() avatar: Express.Multer.File, @UserId() id: number) {
-        return this.userService.updateAvatar(avatar,id)
+        return this.userService.updateAvatar(avatar, id)
     }
 
     @Post('update/images')

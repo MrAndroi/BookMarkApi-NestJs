@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
 import { S3Service } from 'src/aws/s3/s3.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UserId } from './decorators';
 import { UserDto } from './dto';
 
 @Injectable()
@@ -10,7 +11,13 @@ export class UserService {
 
     constructor(private prisma: PrismaService, private s3: S3Service, private config: ConfigService) { }
 
-    getUserData(user: UserDto) {
+    async getUserData(userId: number) {
+        let user = await this.prisma.user.findUnique({
+            where: {
+                id: userId,
+            }
+        })
+        delete user.hash
         return user
     }
 
