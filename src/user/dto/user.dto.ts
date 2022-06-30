@@ -1,13 +1,11 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsString } from "class-validator"
+import { IsEmail, IsNotEmpty, IsNumber, IsString, ValidateIf } from "class-validator"
 
 export class UserDto {
-    id:number
-    @IsNotEmpty()
-    @IsEmail()
-    email: string
-    @IsNotEmpty()
+    @ValidateIf((object, value) => value)
+    @IsString()
     firstName:string
-    @IsNotEmpty()
+    @ValidateIf((object, value) => value)
+    @IsString()
     lastName: string
 }
 

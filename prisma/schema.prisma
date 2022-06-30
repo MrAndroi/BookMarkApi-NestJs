@@ -19,6 +19,7 @@ model User {
 
   firstName String?
   lastName String?
+  avatar String?
 
   bookmarks Bookmark[]
   

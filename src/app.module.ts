@@ -4,6 +4,7 @@ import { UserModule } from './user/user.module';
 import { BookmarkModule } from './bookmark/bookmark.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
+import { S3Service } from './aws/s3/s3.service';
 
 @Module({
   imports: [
@@ -14,5 +15,6 @@ import { ConfigModule } from '@nestjs/config';
     UserModule,
     BookmarkModule,
     PrismaModule],
+  providers: [S3Service],
 })
 export class AppModule {}
