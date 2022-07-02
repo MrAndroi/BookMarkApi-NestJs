@@ -5,6 +5,7 @@ import {
     BadGatewayException,
     CallHandler,
   } from '@nestjs/common';
+import { I18n, I18nContext } from 'nestjs-i18n';
   import { Observable, throwError } from 'rxjs';
   import { catchError } from 'rxjs/operators';
   

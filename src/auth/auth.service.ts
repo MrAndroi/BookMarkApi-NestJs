@@ -1,79 +1,91 @@
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import { BadGatewayException, ForbiddenException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { AuthDto } from "./dto";
 import * as argon from "argon2"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
+import { I18nContext } from "nestjs-i18n";
 
 @Injectable()
-export class AuthService{
+export class AuthService {
 
-    constructor(private prisma: PrismaService,private jwt: JwtService,private config: ConfigService){}
+    constructor(private prisma: PrismaService, private jwt: JwtService, private config: ConfigService) { }
 
-    async signUp(body:AuthDto){
+    async signUp(
+        body: AuthDto,
+        i18n: I18nContext
+    ) {
         //Generate hash for password
         const hash = await argon.hash(body.password)
 
         //Save user To Postgres db
-        try{
+        try {
             const user = await this.prisma.user.create({
-                data:{
+                data: {
                     email: body.email,
                     hash: hash,
                     firstName: body.firstName,
                     lastName: body.lastName
                 }
             })
-    
+
             //Return saved user data
             delete user.hash
-            let accessToken = await this.signAccessToken(user.email,user.id)
-            return {user:user,accessToken:accessToken}
+            let accessToken = await this.signAccessToken(user.email, user.id)
+            return { user: user, accessToken: accessToken }
         }
-        catch(error){
-            if(error instanceof PrismaClientKnownRequestError){
-                if(error.code == 'P2002'){
-                    throw new ForbiddenException("Already Taken Email")
+        catch (err) {
+            if (err instanceof PrismaClientKnownRequestError) {
+                if (err.code == 'P2002') {
+                    throw new ForbiddenException(await i18n.t('errors.email_already_taken'))
                 }
-                return error
+                throw await new BadGatewayException(await i18n.t('errors.general_error', { args: { error: err.message } }))
             }
         }
     }
 
-    async signIn(body:AuthDto){
-        //Find the user 
-        const user = await this.prisma.user.findUnique({
-            where:{
-                email: body.email
+    async signIn(
+        body: AuthDto,
+        i18n: I18nContext
+    ) {
+        try {
+            //Find the user 
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    email: body.email
+                }
+            })
+
+            //Check if the user exists
+            if (!user) throw new ForbiddenException(await i18n.t('errors.user_not_found'))
+
+            //Compare passwords
+            const isPasswordMatches = await argon.verify(user.hash, body.password)
+
+            //Check if user enter correct password
+            if (isPasswordMatches) {
+                delete user.hash
+                let accessToken = await this.signAccessToken(user.email, user.id)
+                return { user: user, accessToken: accessToken }
             }
-        })
+            else throw new ForbiddenException(await i18n.t('errors.wrong_credentials'))
 
-        //Check if the user exists
-        if(!user) throw new ForbiddenException("Incorrect Credentials")
-
-        //Compare passwords
-        const isPasswordMatches = await argon.verify(user.hash,body.password)
-
-        //Check if user enter correct password
-        if(isPasswordMatches) { 
-            delete user.hash
-            let accessToken = await this.signAccessToken(user.email,user.id)
-            return {user:user,accessToken:accessToken}
-         }
-        else throw new ForbiddenException("Incorrect Credentials")
+        } catch (err) {
+            throw await new BadGatewayException(await i18n.t('errors.general_error', { args: { error: err.message } }))
+        }
 
     }
 
     async signAccessToken(
         userEmail: string,
         userId: number,
-    ) : Promise<string> {
+    ): Promise<string> {
         let payload = {
-            sub:userId,
+            sub: userId,
             userEmail
         }
-        let accessToken = await this.jwt.signAsync(payload,{
+        let accessToken = await this.jwt.signAsync(payload, {
             expiresIn: '1d',
             secret: this.config.get('JWT_SECRET')
         })

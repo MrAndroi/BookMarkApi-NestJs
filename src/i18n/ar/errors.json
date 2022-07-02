@@ -1,0 +1,10 @@
+{
+    "general_error":"خطأ غير معروف : {error}",
+    "you_don_not_own_this_bookmark": "ليس لديك الصلاحية لحذف هذه المحفوظة",
+    "bookmark_not_found": "لم يتم العثور على هذة المحفوظة",
+    "user_not_found": "لم يتم العثور على المستخدم",
+    "media_not_found": "لم يتم العثور على الملف",
+    "you_do_not_own_this_media": "لا تملك الصلاحية لحذف هذا الملف",
+    "email_already_taken": "هذا البريد مستخدم من قبل",
+    "wrong_credentials": "خطأ في البريد او كلمة السر"
+}

@@ -69,7 +69,7 @@ export class S3Service {
 
     // Call S3 to create the bucket
     uploadFile(bucketName: string, file: Express.Multer.File): Promise<S3.Location | undefined> {
-        let key = `${file.originalname}/${file.size}-${Date.now()}.${file.mimetype}`;
+        let key = `${file.originalname}/${file.size}/${Date.now()}`;
         const uploadParams = { Bucket: bucketName, Key: key, Body: file.buffer };
 
         // call S3 to retrieve upload file to specified bucket

@@ -1,15 +1,16 @@
-import { IsNotEmpty, IsString, ValidateIf } from "class-validator"
+import { IsNotEmpty, IsOptional, IsString, IsUrl } from "class-validator"
 
 export class BookmarkDto {
-    @IsString()
+
+    @IsString({ message: 'validations.wrong_bookmark_title' })
     @IsNotEmpty()
     title: string
 
-    @IsString()
+    @IsUrl({ message: 'validations.wrong_bookmark_title' })
     @IsNotEmpty()
     link: string
 
-    @ValidateIf((object, value) => value)
+    @IsOptional()
     @IsString()
     description: string
 }

@@ -1,0 +1,9 @@
+{
+    "wrong_bookmark_title": "Please enter valid bookmark title",
+    "wrong_bookmark_link": "Please enter valid bookmark link",
+    "wrong_email": "Please enter correct email",
+    "wrong_first_name": "Please enter valid first name",
+    "wrong_last_name": "Please enter valid last name",
+    "wrong_new_password": "Please enter new valid password",
+    "wrong_old_password": "Please enter old valid password"
+}

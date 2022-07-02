@@ -11,32 +11,43 @@ datasource db {
 }
 
 model User {
-   id Int  @id @default(autoincrement())
-   createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
 
   email String @unique
-  hash String
+  hash  String
 
   firstName String?
-  lastName String?
-  avatar String?
+  lastName  String?
+  avatar    String?
 
   bookmarks Bookmark[]
-  
-   @@map("Users")
+  UserMedia UserMedia[]
+
+  @@map("Users")
+}
+
+model UserMedia {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  url       String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("UsersMedia")
 }
 
 model Bookmark {
-   id Int  @id @default(autoincrement())
-   createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
 
-  title String
-  link String
+  title       String
+  link        String
   description String?
 
   userId Int
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-   @@map("Bookmarks")
 
+  @@map("Bookmarks")
 }

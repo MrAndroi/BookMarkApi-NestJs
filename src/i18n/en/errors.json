@@ -1,0 +1,10 @@
+{
+    "general_error": "Unknown error: {error}",
+    "you_don_not_own_this_bookmark": "You do not own this bookmark",
+    "bookmark_not_found": "Bookmark not found",
+    "user_not_found": "User not found",
+    "media_not_found": "Media not found",
+    "you_do_not_own_this_media": "You Don't own this media",
+    "email_already_taken": "This email is already taken",
+    "wrong_credentials": "Incorrect Email or Password"
+}
