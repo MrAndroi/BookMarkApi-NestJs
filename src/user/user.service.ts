@@ -1,4 +1,4 @@
-import { BadGatewayException, ForbiddenException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadGatewayException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
 import { I18nContext } from 'nestjs-i18n';

@@ -6,7 +6,7 @@ export class BookmarkDto {
     @IsNotEmpty()
     title: string
 
-    @IsUrl({ message: 'validations.wrong_bookmark_title' })
+    @IsUrl({},{ message: 'validations.wrong_bookmark_title' })
     @IsNotEmpty()
     link: string
 

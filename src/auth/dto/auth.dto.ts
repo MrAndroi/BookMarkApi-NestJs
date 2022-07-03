@@ -2,7 +2,7 @@ import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from "class-vali
 
 
 export class AuthDto {
-    @IsEmail({ message: 'validations.wrong_email' })
+    @IsEmail({},{ message: 'validations.wrong_email' })
     @MinLength(8, { message: 'validations.wrong_email' })
     email: string
 
