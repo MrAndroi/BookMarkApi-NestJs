@@ -6,11 +6,11 @@ export const databaseProviders = [
     useFactory: async () => {
       const sequelize = new Sequelize({
         dialect: 'postgres',
-        host: 'localhost',
-        port: 5434,
+        host: 'bookmark-db-1.caolxqclmgpa.us-east-1.rds.amazonaws.com:',
+        port: 5432,
         username: 'postgres',
-        password: '123',
-        database: 'nest',
+        password: 'Goodmode_en',
+        database: 'postgres',
       });
       sequelize.addModels([]);
       await sequelize.sync();

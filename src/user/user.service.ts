@@ -1,10 +1,12 @@
 import { BadGatewayException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { I18nContext } from 'nestjs-i18n';
 import { S3Service } from 'src/aws/s3/s3.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserDto } from './dto';
+import { UserEntity } from './entities';
 
 @Injectable()
 export class UserService {
@@ -21,11 +23,12 @@ export class UserService {
                     id: userId,
                 }
             })
-            delete user.hash
             if (user == null) {
                 throw new NotFoundException(await i18n.t('user_not_found'));
             }
-            return user
+            let response = plainToInstance(UserEntity, user)
+            response.creationDateWithMoment = (i18n.lang)
+            return instanceToPlain(response)
 
         } catch (err) {
             throw await new BadGatewayException(await i18n.t('errors.general_error', { args: { error: err.message } }))
