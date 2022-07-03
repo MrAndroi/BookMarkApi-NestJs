@@ -6,11 +6,8 @@ export class UserEntity {
     email: string
     firstName: string
     lastName: string
-    createdAt: string
     creationDate: string
-
-    @Exclude()
-    hash: string
+    createdAt: string
 
     @Expose({ name: "fullName" })
     get fullName(): string {
@@ -22,5 +19,8 @@ export class UserEntity {
         creationDateFormatted.locale(lang)
         this.creationDate = creationDateFormatted.fromNow()
     }
+
+    @Exclude()
+    hash: string
 
 }
