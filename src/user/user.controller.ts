@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { JwtGuard } from 'src/auth/guard';
@@ -8,6 +8,7 @@ import { UserService } from './user.service';
 
 @UseGuards(JwtGuard)
 @Controller('users')
+@UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
 
     constructor(private userService: UserService) { }
