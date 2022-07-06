@@ -1,5 +1,5 @@
 export function transformMany(models: any[], transformOption = {}, serializer): any[] {
-    return models.map((model) => this.transform(model, transformOption, serializer));
+    return models.map((model) => transform(model, transformOption, serializer));
 
 }
 

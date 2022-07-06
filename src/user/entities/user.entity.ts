@@ -11,6 +11,7 @@ export class UserEntity {
     email: string
     firstName: string
     lastName: string
+    role: string
     
     @Expose({ name: "fullName" })
     get fullName(): string {

@@ -1,0 +1,4 @@
+{
+    "switch_to_admin_action": "{applier} حول {appliedOn} ل ادمن في {time}",
+    "switch_to_user_action": "{applier} حول {appliedOn} ل مستخدم في {time}"
+}

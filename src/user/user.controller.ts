@@ -1,17 +1,40 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { Role } from '@prisma/client';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { JwtGuard } from 'src/auth/guard';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/shared/decorators';
+import { PagingParamsDto } from 'src/shared/dto/dto.paging';
 import { UserId } from './decorators';
 import { NewPasswordDto, UserDto } from './dto';
 import { UserService } from './user.service';
 
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
 
     constructor(private userService: UserService) { }
+
+    @Roles(Role.ADMIN, Role.SUPER_ADMIN)
+    @Patch("make/admin/:userId")
+    switchUserToAdmin(@UserId() adminId: number, @Param('userId') userId: number, @I18n() i18n: I18nContext) {
+        return this.userService.switchUserToAdmin(adminId, Number(userId), i18n)
+    }
+
+    @Roles(Role.SUPER_ADMIN)
+    @Patch("make/user/:adminId")
+    switchAdminToUser(@UserId() superAdminId: number, @Param('adminId') adminId: number, @I18n() i18n: I18nContext) {
+        return this.userService.switchAdminToUser(superAdminId, Number(adminId), i18n)
+    }
+
+    @Roles(Role.ADMIN, Role.SUPER_ADMIN)
+    @Get("roles/history")
+    getRoleHistory(@Query() pagingDto: PagingParamsDto, @I18n() i18n: I18nContext) {
+        return this.userService.getRolesHistory(pagingDto, i18n)
+    }
+
 
     @Get('me')
     getUserData(

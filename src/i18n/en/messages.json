@@ -1,0 +1,4 @@
+{
+    "switch_to_admin_action": "{applier} Makes {appliedOn} Admin on {time}",
+    "switch_to_user_action": "{applier} Makes {appliedOn} User on {time}"
+}

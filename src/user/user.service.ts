@@ -1,17 +1,132 @@
 import { BadGatewayException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Role, RoleAction } from '@prisma/client';
 import * as argon from 'argon2';
+import moment from 'moment';
 import { I18nContext } from 'nestjs-i18n';
 import { S3Service } from 'src/aws/s3/s3.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { transform } from 'src/shared/extintions';
+import { PagingParamsDto, PagingResponse } from 'src/shared/dto/dto.paging';
+import { transform, transformMany } from 'src/shared/extintions';
 import { UserDto } from './dto';
 import { UserEntity } from './entities';
+import { RoleHistoryEntity } from './entities/role.history.entity';
 
 @Injectable()
 export class UserService {
 
     constructor(private prisma: PrismaService, private s3: S3Service, private config: ConfigService) { }
+
+    async switchUserToAdmin(adminId: number, userId: number, i18n: I18nContext) {
+        try {
+            //Get Admin data
+            let applierAdmin = await this.prisma.user.findUnique({
+                where: {
+                    id: adminId
+                }
+            })
+            // Get User data
+            let appliedOnUser = await this.prisma.user.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    role: Role.ADMIN
+                }
+            })
+            //Check if user exist
+            if (appliedOnUser != null) {
+                //Add new role history
+                let roleHistory = await this.prisma.roleHistory.create({
+                    data: {
+                        applier: applierAdmin.email,
+                        appliedOn: appliedOnUser.email,
+                        action: RoleAction.FROM_USER_TO_ADMIN
+                    }
+                })
+
+                //Return watcher history created or not
+                return { data: roleHistory != null }
+            }
+            //Return false means that the operation was not succeed
+            else {
+                return { data: false }
+            }
+        } catch (err) {
+            throw await new BadGatewayException(await i18n.t('errors.general_error', { args: { error: err.message } }))
+        }
+    }
+
+    async switchAdminToUser(superAdminId: number, adminId: number, i18n: I18nContext) {
+        try {
+            //Get Admin data
+            let applierAdmin = await this.prisma.user.findUnique({
+                where: {
+                    id: superAdminId
+                }
+            })
+            // Get User data
+            let appliedOnAdmin = await this.prisma.user.update({
+                where: {
+                    id: adminId
+                },
+                data: {
+                    role: Role.USER
+                }
+            })
+            //Check if admin exist
+            if (appliedOnAdmin != null) {
+                //Add new role history
+                let roleHistory = await this.prisma.roleHistory.create({
+                    data: {
+                        applier: applierAdmin.email,
+                        appliedOn: appliedOnAdmin.email,
+                        action: RoleAction.FROM_ADMIN_TO_USER
+                    }
+                })
+
+                //Return watcher history created or not
+                return { data: roleHistory != null }
+            }
+            //Return false means that the operation was not succeed
+            else {
+                return { data: false }
+            }
+        } catch (err) {
+            throw await new BadGatewayException(await i18n.t('errors.general_error', { args: { error: err.message } }))
+        }
+    }
+
+    async getRolesHistory(pagingDto: PagingParamsDto, i18n: I18nContext) {
+        try {
+            let currentKey = Number(pagingDto.page)
+            let limit = Number(pagingDto.limit)
+
+            let nextKey: number = Number(pagingDto.page) + 1
+            let prevKey: number = Number(pagingDto.page) == 0 ? 0 : Number(pagingDto.page) - 1
+
+            let [history, isNext] = await this.prisma.$transaction([
+                this.prisma.roleHistory.findMany({
+                    skip: currentKey * limit,
+                    take: limit
+                }),
+                this.prisma.roleHistory.count({
+                    skip: nextKey * limit,
+                    take: limit,
+                })
+            ])
+            let transformedHistory = transformMany(history, {}, RoleHistoryEntity)
+            return new PagingResponse(
+                transformedHistory,
+                nextKey,
+                prevKey,
+                isNext > 1
+            )
+
+        } catch (err) {
+            throw await new BadGatewayException(await i18n.t('errors.general_error', { args: { error: err.message } }))
+        }
+    }
 
     async getUserData(
         userId: number,
@@ -35,8 +150,6 @@ export class UserService {
         }
 
     }
-
-
 
     async updateUserData(
         user: UserDto,

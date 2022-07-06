@@ -76,8 +76,6 @@ export class BookmarkService {
         i18n: I18nContext
     ) {
         try {
-
-
             let currentKey = Number(pagingDto.page)
             let limit = Number(pagingDto.limit)
 
