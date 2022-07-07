@@ -1,14 +1,12 @@
 import { BadGatewayException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { I18nContext } from 'nestjs-i18n';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PagingParamsDto, PagingResponse } from 'src/shared/dto/dto.paging';
-import { BookmarkDto } from './dto';
-
+import { PagingParamsDto, PagingResponse } from 'src/shared/dto/paging.dto';
+import { BookmarkDto } from './dto/bookmark.dto';
 @Injectable()
 export class BookmarkService {
 
     constructor(private prisma: PrismaService) { }
-
 
     //Add New Bookmark to specific user
     async addNewBookMark(

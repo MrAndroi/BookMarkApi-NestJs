@@ -5,7 +5,7 @@ import * as argon from 'argon2';
 import { I18nContext } from 'nestjs-i18n';
 import { S3Service } from 'src/aws/s3/s3.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PagingParamsDto, PagingResponse } from 'src/shared/dto/dto.paging';
+import { PagingParamsDto, PagingResponse } from 'src/shared/dto/paging.dto';
 import { transform, transformMany } from 'src/shared/extintions';
 import { UserDto } from './dto';
 import { UserEntity } from './entities';
@@ -130,7 +130,7 @@ export class UserService {
     async getUserData(
         userId: number,
         i18n: I18nContext
-    ) {
+    ) : Promise<UserEntity> {
         try {
             let user = await this.prisma.user.findUnique({
                 where: {
@@ -141,7 +141,7 @@ export class UserService {
                 throw new NotFoundException(await i18n.t('user_not_found'));
             }
 
-            let response = transform(user, { lang: i18n.lang }, UserEntity)
+            let response : UserEntity = transform(user, { lang: i18n.lang }, UserEntity)
             return response
 
         } catch (err) {

@@ -4,7 +4,17 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "assets": [
-      { "include": "i18n/**/*", "watchAssets": true , "outDir" : "dist/apps/api" }
+      { "include": "i18n/**/*", "watchAssets": true , "outDir" : "dist/src/" }
+    ],
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "classValidatorShim": false,
+          "introspectComments": true
+        }
+      }
+     
     ]
   }
 }

@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Headers, Param, Post, Query, UseGuards }
 import { SkipThrottle } from '@nestjs/throttler';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { JwtGuard } from 'src/auth/guard';
-import { PagingParamsDto } from 'src/shared/dto/dto.paging';
+import { PagingParamsDto } from 'src/shared/dto/paging.dto';
 import { UserId } from 'src/user/decorators';
 import { BookmarkService } from './bookmark.service';
 import { BookmarkDto } from './dto';

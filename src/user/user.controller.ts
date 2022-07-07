@@ -5,17 +5,26 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiConsumes, ApiHeader, ApiSecurity } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { Role } from '@prisma/client';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { JwtGuard } from 'src/auth/guard';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Roles } from 'src/shared/decorators';
-import { PagingParamsDto } from 'src/shared/dto/dto.paging';
+import { ApiFile, ApiMultiFile } from 'src/shared/decorators/swagger.decorator';
+import { PagingParamsDto } from 'src/shared/dto/paging.dto';
 import { UserId } from './decorators';
 import { NewPasswordDto, UserDto } from './dto';
+import { UserEntity } from './entities';
 import { UserService } from './user.service';
 
+@ApiBearerAuth()
+@ApiHeader({
+    name: 'localization',
+    description: 'Add localization (ar-en) default en',
+    required: false,
+})
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -44,10 +53,10 @@ export class UserController {
 
 
     @Get('me')
-    getUserData(
+    async getUserData(
         @UserId() id: number,
         @I18n() i18n: I18nContext
-    ) {
+    )  : Promise<UserEntity> {
         return this.userService.getUserData(id, i18n)
     }
 
@@ -69,6 +78,8 @@ export class UserController {
         return this.userService.updatePassword(body.oldPassword, body.newPassword, id, i18n)
     }
 
+    @ApiConsumes('multipart/form-data')
+    @ApiFile('avatar')
     @Post('update/avatar')
     @UseInterceptors(FileInterceptor('avatar'))
     updateAvatar(
@@ -79,6 +90,8 @@ export class UserController {
         return this.userService.updateAvatar(avatar, id, i18n)
     }
 
+    @ApiConsumes('multipart/form-data')
+    @ApiMultiFile('user_media')
     @Post('add/media')
     @UseInterceptors(FileFieldsInterceptor([
         {

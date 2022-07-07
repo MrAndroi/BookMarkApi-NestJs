@@ -1,11 +1,11 @@
 import { BadGatewayException, ForbiddenException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { AuthDto } from "./dto";
 import * as argon from "argon2"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { I18nContext } from "nestjs-i18n";
+import { AuthDto } from "./dto";
 
 @Injectable()
 export class AuthService {

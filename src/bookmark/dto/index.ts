@@ -1,1 +1,1 @@
-export * from './dto.bookmark'
+export * from './bookmark.dto'

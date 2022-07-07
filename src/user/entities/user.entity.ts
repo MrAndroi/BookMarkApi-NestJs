@@ -31,9 +31,9 @@ export class UserEntity {
     hash: string
 
     @Exclude()
-    lang
+    lang: string
 
     @Exclude()
-    createdAt
+    createdAt: string
 
 }
