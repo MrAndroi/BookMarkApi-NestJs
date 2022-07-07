@@ -2,7 +2,6 @@ import { BadGatewayException, ForbiddenException, Injectable, NotFoundException 
 import { ConfigService } from '@nestjs/config';
 import { Role, RoleAction } from '@prisma/client';
 import * as argon from 'argon2';
-import moment from 'moment';
 import { I18nContext } from 'nestjs-i18n';
 import { S3Service } from 'src/aws/s3/s3.service';
 import { PrismaService } from 'src/prisma/prisma.service';

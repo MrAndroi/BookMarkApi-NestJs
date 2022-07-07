@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Headers, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { JwtGuard } from 'src/auth/guard';
 import { PagingParamsDto } from 'src/shared/dto/dto.paging';
@@ -30,6 +31,7 @@ export class BookmarkController {
         return this.bookmarkService.deleteBookmark(Number(bookmarkId), userId, i18n)
     }
 
+    @SkipThrottle()
     @Get("all")
     getUserBookmarks(
         @UserId() id: number,

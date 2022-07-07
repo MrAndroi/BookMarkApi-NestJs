@@ -1,5 +1,11 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+    Body, ClassSerializerInterceptor, Controller,
+    Delete, Get, Param, Patch, Post, Query,
+    UploadedFile, UploadedFiles, UseGuards,
+    UseInterceptors
+} from '@nestjs/common';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { Throttle } from '@nestjs/throttler';
 import { Role } from '@prisma/client';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { JwtGuard } from 'src/auth/guard';
@@ -17,6 +23,7 @@ export class UserController {
 
     constructor(private userService: UserService) { }
 
+    @Throttle(10,60)
     @Roles(Role.ADMIN, Role.SUPER_ADMIN)
     @Patch("make/admin/:userId")
     switchUserToAdmin(@UserId() adminId: number, @Param('userId') userId: number, @I18n() i18n: I18nContext) {

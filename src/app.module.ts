@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { AcceptLanguageResolver, HeaderResolver, I18nModule } from 'nestjs-i18n';
+import * as path from 'path';
 import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
+import { S3Service } from './aws/s3/s3.service';
 import { BookmarkModule } from './bookmark/bookmark.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { ConfigModule } from '@nestjs/config';
-import { S3Service } from './aws/s3/s3.service';
-import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
-import * as path from 'path';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -17,6 +18,10 @@ import * as path from 'path';
     UserModule,
     BookmarkModule,
     PrismaModule,
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 20
+    }),
     I18nModule.forRoot({
       fallbackLanguage: 'en',
       loaderOptions: {
@@ -27,7 +32,7 @@ import * as path from 'path';
         { use: HeaderResolver, options: ['localization'] },
         AcceptLanguageResolver,
       ],
-    }),
+    })
   ],
   providers: [S3Service],
 })
