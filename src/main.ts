@@ -27,10 +27,11 @@ async function bootstrap() {
     .setTitle('Bookmark-API')
     .setDescription('This is test project for bookmark-api')
     .setVersion('1.0')
-    .addTag('bookmarks')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: { defaultModelsExpandDepth: -1 },
+  });
 
   await app.listen(3000);
 }

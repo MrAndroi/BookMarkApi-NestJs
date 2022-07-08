@@ -6,10 +6,12 @@ import { I18nContext } from 'nestjs-i18n';
 import { S3Service } from 'src/aws/s3/s3.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PagingParamsDto, PagingResponse } from 'src/shared/dto/paging.dto';
+import { BasicResponse, BasicResponseList } from 'src/shared/entities';
 import { transform, transformMany } from 'src/shared/extintions';
 import { UserDto } from './dto';
 import { UserEntity } from './entities';
 import { RoleHistoryEntity } from './entities/role.history.entity';
+import { UserMediaEntity } from './entities/user.media.entity';
 
 @Injectable()
 export class UserService {
@@ -130,7 +132,7 @@ export class UserService {
     async getUserData(
         userId: number,
         i18n: I18nContext
-    ) : Promise<UserEntity> {
+    ) {
         try {
             let user = await this.prisma.user.findUnique({
                 where: {
@@ -141,7 +143,7 @@ export class UserService {
                 throw new NotFoundException(await i18n.t('user_not_found'));
             }
 
-            let response : UserEntity = transform(user, { lang: i18n.lang }, UserEntity)
+            let response: UserEntity = transform(user, { lang: i18n.lang }, UserEntity)
             return response
 
         } catch (err) {
@@ -163,7 +165,8 @@ export class UserService {
                 },
                 data: user
             }) != null
-            return { data: updated }
+            let response: BasicResponse = transform({ data: updated }, {}, BasicResponse)
+            return response
         } catch (err) {
             throw await new BadGatewayException(await i18n.t('errors.general_error', { args: { error: err.message } }))
         }
@@ -191,28 +194,22 @@ export class UserService {
                 //Set new hash to user
                 user.hash = newPasswordHash
                 //Update user in the data base
-                let updated = false
-                try {
-                    updated = await this.prisma.user.update({
-                        where: {
-                            id: userId
-                        },
-                        data: {
-                            hash: newPasswordHash
-                        }
-                    }) != null
-                    return { updated: updated }
-                }
-                catch {
-                    return { updated: updated }
-                }
-
+                let updated = await this.prisma.user.update({
+                    where: {
+                        id: userId
+                    },
+                    data: {
+                        hash: newPasswordHash
+                    }
+                }) != null
+                let response: BasicResponse = transform({ data: updated }, {}, BasicResponse)
+                return response
             }
             else {
                 throw new ForbiddenException(await i18n.t('validations.wrong_old_password'))
             }
         } catch (err) {
-            throw await new BadGatewayException(await i18n.t('errors.general_error', { args: { error: err.message } }))
+            throw new BadGatewayException(await i18n.t('errors.general_error', { args: { error: err.message } }))
         }
 
     }
@@ -232,7 +229,8 @@ export class UserService {
                     avatar: newAvatar
                 }
             }) != null
-            return { data: updated }
+            let response: BasicResponse = transform({ data: updated }, {}, BasicResponse)
+            return response
         } catch (err) {
             throw await new BadGatewayException(await i18n.t('errors.general_error', { args: { error: err.message } }))
         }
@@ -254,7 +252,8 @@ export class UserService {
                     }
                 })
             })) != null
-            return { data: added }
+            let response: BasicResponse = transform({ data: added }, {}, BasicResponse)
+            return response
         } catch (err) {
             throw await new BadGatewayException(await i18n.t('errors.general_error', { args: { error: err.message } }))
         }
@@ -270,7 +269,8 @@ export class UserService {
                     userId: userId
                 }
             })
-            return { data: media }
+            let response : UserMediaEntity[] = transformMany(media, {}, UserMediaEntity)
+            return response
         } catch (err) {
             throw await new BadGatewayException(await i18n.t('errors.general_error', { args: { error: err.message } }))
         }
@@ -299,7 +299,8 @@ export class UserService {
                     id: mediaId
                 }
             }) != null
-            return { data: deleted }
+            let response: BasicResponse = transform({ data: deleted }, {}, BasicResponse)
+            return response
         } catch (err) {
             throw await new BadGatewayException(await i18n.t('errors.general_error', { args: { error: err.message } }))
         }

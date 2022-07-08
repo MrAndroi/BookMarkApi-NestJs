@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Headers, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { JwtGuard } from 'src/auth/guard';
@@ -7,6 +8,13 @@ import { UserId } from 'src/user/decorators';
 import { BookmarkService } from './bookmark.service';
 import { BookmarkDto } from './dto';
 
+@ApiBearerAuth()
+@ApiHeader({
+    name: 'localization',
+    description: 'Add localization (ar-en) default en',
+    required: false,
+})
+@ApiTags('Bookmarks')
 @UseGuards(JwtGuard)
 @Controller('bookmark')
 export class BookmarkController {

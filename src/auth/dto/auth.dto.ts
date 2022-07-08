@@ -1,7 +1,7 @@
 import { IsEmail, IsOptional, IsString, MinLength } from "class-validator"
 
 
-export class AuthDto {
+export class AuthSignUpDto {
     @IsEmail({},{ message: 'validations.wrong_email' })
     @MinLength(8, { message: 'validations.wrong_email' })
     email: string
@@ -13,10 +13,21 @@ export class AuthDto {
     @IsOptional()
     @IsString({ message: 'validations.wrong_first_name' })
     @MinLength(3, { message: 'validations.wrong_first_name' })
-    firstName: string
+    firstName?: string
 
     @IsOptional()
     @IsString({ message: 'validations.wrong_last_name' })
     @MinLength(3, { message: 'validations.wrong_last_name' })
-    lastName: string
+    lastName?: string
+}
+
+
+export class AuthSignInDto {
+    @IsEmail({},{ message: 'validations.wrong_email' })
+    @MinLength(8, { message: 'validations.wrong_email' })
+    email: string
+
+    @IsString({ message: 'validations.wrong_new_password' })
+    @MinLength(8, { message: 'validations.wrong_new_password' })
+    password: string
 }

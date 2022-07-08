@@ -5,7 +5,7 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiConsumes, ApiHeader, ApiSecurity } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiHeader, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { Role } from '@prisma/client';
 import { I18n, I18nContext } from 'nestjs-i18n';
@@ -14,6 +14,7 @@ import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Roles } from 'src/shared/decorators';
 import { ApiFile, ApiMultiFile } from 'src/shared/decorators/swagger.decorator';
 import { PagingParamsDto } from 'src/shared/dto/paging.dto';
+import { BasicResponse } from 'src/shared/entities';
 import { UserId } from './decorators';
 import { NewPasswordDto, UserDto } from './dto';
 import { UserEntity } from './entities';
@@ -32,19 +33,22 @@ export class UserController {
 
     constructor(private userService: UserService) { }
 
-    @Throttle(10,60)
+    @ApiTags('Admin')
+    @Throttle(10, 60)
     @Roles(Role.ADMIN, Role.SUPER_ADMIN)
     @Patch("make/admin/:userId")
     switchUserToAdmin(@UserId() adminId: number, @Param('userId') userId: number, @I18n() i18n: I18nContext) {
         return this.userService.switchUserToAdmin(adminId, Number(userId), i18n)
     }
 
+    @ApiTags('Admin')
     @Roles(Role.SUPER_ADMIN)
     @Patch("make/user/:adminId")
     switchAdminToUser(@UserId() superAdminId: number, @Param('adminId') adminId: number, @I18n() i18n: I18nContext) {
         return this.userService.switchAdminToUser(superAdminId, Number(adminId), i18n)
     }
 
+    @ApiTags('Admin')
     @Roles(Role.ADMIN, Role.SUPER_ADMIN)
     @Get("roles/history")
     getRoleHistory(@Query() pagingDto: PagingParamsDto, @I18n() i18n: I18nContext) {
@@ -52,16 +56,18 @@ export class UserController {
     }
 
 
+    @ApiTags('Users')
     @Get('me')
     async getUserData(
         @UserId() id: number,
         @I18n() i18n: I18nContext
-    )  : Promise<UserEntity> {
+    ): Promise<UserEntity> {
         return this.userService.getUserData(id, i18n)
     }
 
+    @ApiTags('Users')
     @Patch('update')
-    updateUserData(
+    async updateUserData(
         @Body() user: UserDto,
         @UserId() id: number,
         @I18n() i18n: I18nContext
@@ -69,6 +75,7 @@ export class UserController {
         return this.userService.updateUserData(user, id, i18n)
     }
 
+    @ApiTags('Users')
     @Patch('update/password')
     updateUserPassword(
         @Body() body: NewPasswordDto,
@@ -78,6 +85,7 @@ export class UserController {
         return this.userService.updatePassword(body.oldPassword, body.newPassword, id, i18n)
     }
 
+    @ApiTags('Users')
     @ApiConsumes('multipart/form-data')
     @ApiFile('avatar')
     @Post('update/avatar')
@@ -90,6 +98,7 @@ export class UserController {
         return this.userService.updateAvatar(avatar, id, i18n)
     }
 
+    @ApiTags('Users')
     @ApiConsumes('multipart/form-data')
     @ApiMultiFile('user_media')
     @Post('add/media')
@@ -107,6 +116,7 @@ export class UserController {
         return this.userService.addUserMedia(files.user_media, id, i18n)
     }
 
+    @ApiTags('Users')
     @Get('media')
     getUserMedia(
         @UserId() id: number,
@@ -115,6 +125,7 @@ export class UserController {
         return this.userService.getUserMedia(id, i18n)
     }
 
+    @ApiTags('Users')
     @Delete('delete/media/:id')
     deleteUserMedia(
         @UserId() id: number,

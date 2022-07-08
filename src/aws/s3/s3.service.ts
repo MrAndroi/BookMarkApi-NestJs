@@ -31,7 +31,7 @@ export class S3Service {
             if (err) console.log(err.stack);
             // credentials not loaded
             else {
-                console.log("AWS credentials:", AWS.config.credentials);
+                //console.log("AWS credentials:", AWS.config.credentials);
             }
         });
         this.s3 = new S3();

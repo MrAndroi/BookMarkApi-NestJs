@@ -1,9 +1,16 @@
 import { Body, Controller, Post } from "@nestjs/common";
+import { ApiHeader, ApiTags } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
 import { I18n, I18nContext } from "nestjs-i18n";
 import { AuthService } from "./auth.service";
-import { AuthDto } from "./dto";
+import { AuthSignInDto, AuthSignUpDto } from "./dto";
 
+@ApiHeader({
+    name: 'localization',
+    description: 'Add localization (ar-en) default en',
+    required: false,
+})
+@ApiTags('Authentication')
 @Controller("auth")
 export class AuthController {
 
@@ -12,7 +19,7 @@ export class AuthController {
     @Throttle(3, 60)
     @Post("sign_up")
     signUp(
-        @Body() body: AuthDto,
+        @Body() body: AuthSignUpDto,
         @I18n() i18n: I18nContext,
     ) {
         return this.authService.signUp(body, i18n)
@@ -21,7 +28,7 @@ export class AuthController {
     @Throttle(3, 60)
     @Post("sign_in")
     signIn(
-        @Body() body: AuthDto,
+        @Body() body: AuthSignInDto,
         @I18n() i18n: I18nContext,
     ) {
         return this.authService.signIn(body, i18n)

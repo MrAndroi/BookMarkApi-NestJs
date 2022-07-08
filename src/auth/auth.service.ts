@@ -5,7 +5,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { I18nContext } from "nestjs-i18n";
-import { AuthDto } from "./dto";
+import { AuthSignInDto, AuthSignUpDto } from "./dto";
 
 @Injectable()
 export class AuthService {
@@ -13,7 +13,7 @@ export class AuthService {
     constructor(private prisma: PrismaService, private jwt: JwtService, private config: ConfigService) { }
 
     async signUp(
-        body: AuthDto,
+        body: AuthSignUpDto,
         i18n: I18nContext
     ) {
         //Generate hash for password
@@ -46,7 +46,7 @@ export class AuthService {
     }
 
     async signIn(
-        body: AuthDto,
+        body: AuthSignInDto,
         i18n: I18nContext
     ) {
         try {
