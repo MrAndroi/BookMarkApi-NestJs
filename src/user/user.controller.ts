@@ -1,24 +1,25 @@
 import {
     Body, ClassSerializerInterceptor, Controller,
-    Delete, Get, Param, Patch, Post, Query,
-    UploadedFile, UploadedFiles, UseGuards,
+    Delete, Get, Param, Patch, Post, Query, UploadedFile, UploadedFiles, UseGuards,
     UseInterceptors
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiConsumes, ApiHeader, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { Role } from '@prisma/client';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { JwtGuard } from 'src/auth/guard';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Roles } from 'src/shared/decorators';
+import { Public } from 'src/shared/decorators/public.decorator';
 import { ApiFile, ApiMultiFile } from 'src/shared/decorators/swagger.decorator';
 import { PagingParamsDto } from 'src/shared/dto/paging.dto';
-import { BasicResponse } from 'src/shared/entities';
-import { UserId } from './decorators';
+import { User, UserId } from './decorators';
 import { NewPasswordDto, UserDto } from './dto';
 import { UserEntity } from './entities';
 import { UserService } from './user.service';
+
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -26,7 +27,7 @@ import { UserService } from './user.service';
     description: 'Add localization (ar-en) default en',
     required: false,
 })
-@UseGuards(JwtGuard, RolesGuard)
+@UseGuards(new JwtGuard(new Reflector()), RolesGuard)
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
@@ -56,13 +57,15 @@ export class UserController {
     }
 
 
+    @Public()
     @ApiTags('Users')
     @Get('me')
     async getUserData(
-        @UserId() id: number,
-        @I18n() i18n: I18nContext
+        @I18n() i18n: I18nContext,
+        @User() user,
     ): Promise<UserEntity> {
-        return this.userService.getUserData(id, i18n)
+        if(user === undefined) return //Here we can call method to get bookmark without user data
+        return this.userService.getUserData(user.id ? -1 : user.id, i18n) // here we can get bookmark with user data
     }
 
     @ApiTags('Users')

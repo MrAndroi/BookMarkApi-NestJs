@@ -2,7 +2,9 @@ import { BadGatewayException, ForbiddenException, Injectable, NotFoundException 
 import { I18nContext } from 'nestjs-i18n';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PagingParamsDto, PagingResponse } from 'src/shared/dto/paging.dto';
+import { transform } from 'src/shared/extintions';
 import { BookmarkDto } from './dto/bookmark.dto';
+import { BookmarkEntity } from './entities/bookmark.entity';
 @Injectable()
 export class BookmarkService {
 
@@ -108,5 +110,29 @@ export class BookmarkService {
 
     }
 
+    async getBookmarkById(
+        i18n: I18nContext,
+        user,
+        bookmarkId: string,
+    ): Promise<BookmarkEntity> {
+        try {
+            let bookmark = await this.prisma.bookmark.findUnique({
+                where: {
+                    id: Number(bookmarkId)
+                }
+            })
+            if (user !== undefined) {
+                let response = transform(bookmark, { isSavedByUser: bookmark.userId === user.id }, BookmarkEntity)
+                return response
+            } else {
+
+                let response = transform(bookmark, { isSavedByUser: false }, BookmarkEntity)
+                return response
+            }
+
+        } catch (err) {
+            throw await new BadGatewayException(await i18n.t('errors.general_error', { args: { error: err.message } }))
+        }
+    }
 
 }
