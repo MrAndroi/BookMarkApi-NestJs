@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AcceptLanguageResolver, HeaderResolver, I18nModule } from 'nestjs-i18n';
 import * as path from 'path';
+import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { S3Service } from './aws/s3/s3.service';
 import { BookmarkModule } from './bookmark/bookmark.module';
@@ -35,5 +36,6 @@ import { UserModule } from './user/user.module';
     })
   ],
   providers: [S3Service],
+  controllers: [AppController],
 })
 export class AppModule { }
