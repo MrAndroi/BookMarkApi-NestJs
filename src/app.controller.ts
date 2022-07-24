@@ -5,7 +5,7 @@ export class AppController {
     
     @Get()
     getHello(){
-        return "Hello api"
+        return "Hello world!"
     }
 
 }
