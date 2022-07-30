@@ -6,7 +6,7 @@ import { I18nContext } from 'nestjs-i18n';
 import { S3Service } from 'src/aws/s3/s3.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PagingParamsDto, PagingResponse } from 'src/shared/dto/paging.dto';
-import { BasicResponse, BasicResponseList } from 'src/shared/entities';
+import { BasicResponse } from 'src/shared/entities';
 import { transform, transformMany } from 'src/shared/extintions';
 import { UserDto } from './dto';
 import { UserEntity } from './entities';
@@ -269,7 +269,7 @@ export class UserService {
                     userId: userId
                 }
             })
-            let response : UserMediaEntity[] = transformMany(media, {}, UserMediaEntity)
+            let response: UserMediaEntity[] = transformMany(media, {}, UserMediaEntity)
             return response
         } catch (err) {
             throw await new BadGatewayException(await i18n.t('errors.general_error', { args: { error: err.message } }))
