@@ -1,12 +1,14 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { i18nValidationErrorFactory, I18nValidationExceptionFilter } from 'nestjs-i18n';
 import { AppModule } from './app.module';
 import { ExcludeNullInterceptor } from './shared/interceptors';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as fs from 'fs';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+
+  const app = await NestFactory.create(AppModule, { cors: true  });
 
   //Validations for DTO's with localization using i81n
   app.useGlobalPipes(
